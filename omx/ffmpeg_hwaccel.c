@@ -11,32 +11,46 @@
 #ifdef LIBAV_CONFIG_H
 #include "avtools/avconv.h"
 #else
-#include "ffmpeg.h"
+#include "fftools/ffmpeg.h"
 #endif
 
 /* BEGIN: Extracted from ffmpeg_opt.c */
 
 const HWAccel hwaccels[] = {
 #if HAVE_VDPAU_X11
-    { "vdpau", vdpau_init, HWACCEL_VDPAU, AV_PIX_FMT_VDPAU },
+    { "vdpau", hwaccel_decode_init, HWACCEL_VDPAU, AV_PIX_FMT_VDPAU,
+      AV_HWDEVICE_TYPE_VDPAU },
+#endif
+#if CONFIG_D3D11VA
+    { "d3d11va", hwaccel_decode_init, HWACCEL_D3D11VA, AV_PIX_FMT_D3D11,
+      AV_HWDEVICE_TYPE_D3D11VA },
+#endif
+#if CONFIG_DXVA2
+    { "dxva2", hwaccel_decode_init, HWACCEL_DXVA2, AV_PIX_FMT_DXVA2_VLD,
+      AV_HWDEVICE_TYPE_DXVA2 },
 #endif
 #if CONFIG_VDA
-    { "vda", videotoolbox_init, HWACCEL_VDA, AV_PIX_FMT_VDA },
+    { "vda",   videotoolbox_init,   HWACCEL_VDA,   AV_PIX_FMT_VDA,
+      AV_HWDEVICE_TYPE_NONE },
+#endif
+#if CONFIG_VIDEOTOOLBOX
+    { "videotoolbox",   videotoolbox_init,   HWACCEL_VIDEOTOOLBOX,   AV_PIX_FMT_VIDEOTOOLBOX,
+      AV_HWDEVICE_TYPE_NONE },
 #endif
 #if CONFIG_LIBMFX
-    { "qsv", qsv_init, HWACCEL_QSV, AV_PIX_FMT_QSV },
+    { "qsv",   qsv_init,   HWACCEL_QSV,   AV_PIX_FMT_QSV,
+      AV_HWDEVICE_TYPE_NONE },
 #endif
 #if CONFIG_VAAPI
-#ifdef LIBAV_CONFIG_H
-    { "vaapi", hwaccel_decode_init, HWACCEL_VAAPI, AV_PIX_FMT_VAAPI, AV_HWDEVICE_TYPE_VAAPI },
-#else
-    { "vaapi", vaapi_decode_init, HWACCEL_VAAPI, AV_PIX_FMT_VAAPI },
-#endif
+    { "vaapi", vaapi_decode_init, HWACCEL_VAAPI, AV_PIX_FMT_VAAPI,
+      AV_HWDEVICE_TYPE_VAAPI },
 #endif
 #if CONFIG_CUVID
-    { "cuvid", cuvid_init, HWACCEL_CUVID, AV_PIX_FMT_CUDA },
+    { "cuvid", cuvid_init, HWACCEL_CUVID, AV_PIX_FMT_CUDA,
+      AV_HWDEVICE_TYPE_NONE },
 #endif
-    { 0, 0, HWACCEL_NONE, AV_PIX_FMT_NONE },
+    { 0, 0, HWACCEL_NONE, AV_PIX_FMT_NONE,
+      AV_HWDEVICE_TYPE_NONE },
 };
 
 /* END: Extracted from ffmpeg_opt.c */
