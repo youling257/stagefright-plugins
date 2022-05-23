@@ -42,7 +42,7 @@ const HWAccel hwaccels[] = {
       AV_HWDEVICE_TYPE_NONE },
 #endif
 #if CONFIG_VAAPI
-    { "vaapi", vaapi_decode_init, HWACCEL_VAAPI, AV_PIX_FMT_VAAPI,
+    { "vaapi", vaapi_decode_init, HWACCEL_GENERIC, AV_PIX_FMT_VAAPI,
       AV_HWDEVICE_TYPE_VAAPI },
 #endif
 #if CONFIG_CUVID
@@ -120,7 +120,6 @@ static enum AVPixelFormat get_format(AVCodecContext *s, const enum AVPixelFormat
         }
         ist->active_hwaccel_id = hwaccel->id;
         ist->hwaccel_pix_fmt = *p;
-        s->thread_count = 1;
 #ifdef LIBAV_CONFIG_H
         ist->dec = s->codec;
         ist->dec_ctx = avcodec_alloc_context3(ist->dec);
@@ -159,7 +158,7 @@ int ffmpeg_hwaccel_init(AVCodecContext *avctx)
     if (!ist)
         return AVERROR(ENOMEM);
 
-    ist->hwaccel_id = HWACCEL_AUTO;
+    ist->hwaccel_id = HWACCEL_GENERIC;
     ist->hwaccel_device = "android";
     ist->hwaccel_output_format = AV_PIX_FMT_YUV420P;
 
