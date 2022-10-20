@@ -16,8 +16,6 @@
 
 include $(CLEAR_VARS)
 
-include external/$(AV_CODEC_LIB)/android/$(AV_CODEC_LIB).mk
-
 # put the libraries to /vendor
 LOCAL_PROPRIETARY_MODULE := true
 
@@ -44,7 +42,7 @@ endif
 LOCAL_CFLAGS += -D__STDC_CONSTANT_MACROS=1 -D__STDINT_LIMITS=1
 
 # Quiet some noise
-LOCAL_CFLAGS += -Wno-deprecated-declarations -Wno-unused-parameter
+LOCAL_CFLAGS += -Wno-deprecated-declarations -Wno-unused-parameter -Wno-sign-compare -Wno-reserved-user-defined-literal
 LOCAL_CLANG_CFLAGS += -Wno-unknown-attributes
 
 LOCAL_MODULE_TAGS := optional

@@ -29,43 +29,43 @@
 namespace android {
 
 //video
-sp<MetaData> setAVCFormat(AVCodecContext *avctx);
-sp<MetaData> setH264Format(AVCodecContext *avctx);
-sp<MetaData> setMPEG4Format(AVCodecContext *avctx);
-sp<MetaData> setH263Format(AVCodecContext *avctx);
-sp<MetaData> setMPEG2VIDEOFormat(AVCodecContext *avctx);
-sp<MetaData> setVC1Format(AVCodecContext *avctx);
-sp<MetaData> setWMV1Format(AVCodecContext *avctx);
-sp<MetaData> setWMV2Format(AVCodecContext *avctx);
-sp<MetaData> setWMV3Format(AVCodecContext *avctx);
-sp<MetaData> setRV20Format(AVCodecContext *avctx);
-sp<MetaData> setRV30Format(AVCodecContext *avctx);
-sp<MetaData> setRV40Format(AVCodecContext *avctx);
-sp<MetaData> setFLV1Format(AVCodecContext *avctx);
-sp<MetaData> setHEVCFormat(AVCodecContext *avctx);
-sp<MetaData> setVP8Format(AVCodecContext *avctx);
-sp<MetaData> setVP9Format(AVCodecContext *avctx);
+sp<MetaData> setAVCFormat(AVCodecParameters *avpar);
+sp<MetaData> setH264Format(AVCodecParameters *avpar);
+sp<MetaData> setMPEG4Format(AVCodecParameters *avpar);
+sp<MetaData> setH263Format(AVCodecParameters *avpar);
+sp<MetaData> setMPEG2VIDEOFormat(AVCodecParameters *avpar);
+sp<MetaData> setVC1Format(AVCodecParameters *avpar);
+sp<MetaData> setWMV1Format(AVCodecParameters *avpar);
+sp<MetaData> setWMV2Format(AVCodecParameters *avpar);
+sp<MetaData> setWMV3Format(AVCodecParameters *avpar);
+sp<MetaData> setRV20Format(AVCodecParameters *avpar);
+sp<MetaData> setRV30Format(AVCodecParameters *avpar);
+sp<MetaData> setRV40Format(AVCodecParameters *avpar);
+sp<MetaData> setFLV1Format(AVCodecParameters *avpar);
+sp<MetaData> setHEVCFormat(AVCodecParameters *avpar);
+sp<MetaData> setVP8Format(AVCodecParameters *avpar);
+sp<MetaData> setVP9Format(AVCodecParameters *avpar);
 //audio
-sp<MetaData> setMP2Format(AVCodecContext *avctx);
-sp<MetaData> setMP3Format(AVCodecContext *avctx);
-sp<MetaData> setVORBISFormat(AVCodecContext *avctx);
-sp<MetaData> setAC3Format(AVCodecContext *avctx);
-sp<MetaData> setAACFormat(AVCodecContext *avctx);
-sp<MetaData> setWMAV1Format(AVCodecContext *avctx);
-sp<MetaData> setWMAV2Format(AVCodecContext *avctx);
-sp<MetaData> setWMAProFormat(AVCodecContext *avctx);
-sp<MetaData> setWMALossLessFormat(AVCodecContext *avctx);
-sp<MetaData> setRAFormat(AVCodecContext *avctx);
-sp<MetaData> setAPEFormat(AVCodecContext *avctx);
-sp<MetaData> setDTSFormat(AVCodecContext *avctx);
-sp<MetaData> setFLACFormat(AVCodecContext *avctx);
-sp<MetaData> setALACFormat(AVCodecContext *avctx);
+sp<MetaData> setMP2Format(AVCodecParameters *avpar);
+sp<MetaData> setMP3Format(AVCodecParameters *avpar);
+sp<MetaData> setVORBISFormat(AVCodecParameters *avpar);
+sp<MetaData> setAC3Format(AVCodecParameters *avpar);
+sp<MetaData> setAACFormat(AVCodecParameters *avpar);
+sp<MetaData> setWMAV1Format(AVCodecParameters *avpar);
+sp<MetaData> setWMAV2Format(AVCodecParameters *avpar);
+sp<MetaData> setWMAProFormat(AVCodecParameters *avpar);
+sp<MetaData> setWMALossLessFormat(AVCodecParameters *avpar);
+sp<MetaData> setRAFormat(AVCodecParameters *avpar);
+sp<MetaData> setAPEFormat(AVCodecParameters *avpar);
+sp<MetaData> setDTSFormat(AVCodecParameters *avpar);
+sp<MetaData> setFLACFormat(AVCodecParameters *avpar);
+sp<MetaData> setALACFormat(AVCodecParameters *avpar);
 
 //Convert H.264 NAL format to annex b
 status_t convertNal2AnnexB(uint8_t *dst, size_t dst_size,
         uint8_t *src, size_t src_size, size_t nal_len_size);
 
-int getDivXVersion(AVCodecContext *avctx);
+int getDivXVersion(AVCodecParameters *avpar);
 
 status_t parseMetadataTags(AVFormatContext *ctx, const sp<MetaData> &meta);
 
