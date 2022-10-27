@@ -76,8 +76,8 @@ private:
     size_t mPktCounter;
     int mAbortRequest;
 
-    PacketQueue mAudioQ;
-    PacketQueue mVideoQ;
+    PacketQueue *mAudioQ;
+    PacketQueue *mVideoQ;
 
     AVFormatContext *mFormatCtx;
     int mVideoStreamIdx;

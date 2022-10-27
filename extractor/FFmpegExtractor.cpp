@@ -113,14 +113,16 @@ private:
 FFmpegExtractor::FFmpegExtractor(const sp<DataSource> &source, const sp<AMessage> &meta)
     : mDataSource(source),
       mMeta(new MetaData),
+      mAudioQ(NULL),
+      mVideoQ(NULL),
       mFormatCtx(NULL),
       mParsedMetadata(false) {
     ALOGV("FFmpegExtractor::FFmpegExtractor");
 
     fetchStuffsFromSniffedMeta(meta);
 
-    packet_queue_init(&mVideoQ);
-    packet_queue_init(&mAudioQ);
+    mVideoQ = packet_queue_alloc();
+    mAudioQ = packet_queue_alloc();
 
     int err = initStreams();
     if (err < 0) {
@@ -159,8 +161,8 @@ FFmpegExtractor::~FFmpegExtractor() {
 
     Mutex::Autolock autoLock(mLock);
 
-    packet_queue_destroy(&mVideoQ);
-    packet_queue_destroy(&mAudioQ);
+    packet_queue_free(&mVideoQ);
+    packet_queue_free(&mAudioQ);
 }
 
 size_t FFmpegExtractor::countTracks() {
@@ -649,7 +651,7 @@ int FFmpegExtractor::streamComponentOpen(int streamIndex)
                 // disable the stream
                 mVideoStreamIdx = -1;
                 mVideoStream = NULL;
-                packet_queue_flush(&mVideoQ);
+                packet_queue_flush(mVideoQ);
                 mFormatCtx->streams[streamIndex]->discard = AVDISCARD_ALL;
             }
             return ret;
@@ -674,7 +676,7 @@ int FFmpegExtractor::streamComponentOpen(int streamIndex)
         trackInfo->mIndex  = streamIndex;
         trackInfo->mMeta   = meta;
         trackInfo->mStream = mVideoStream;
-        trackInfo->mQueue  = &mVideoQ;
+        trackInfo->mQueue  = mVideoQ;
         trackInfo->mSeek   = false;
 
         mDefersToCreateVideoTrack = false;
@@ -692,7 +694,7 @@ int FFmpegExtractor::streamComponentOpen(int streamIndex)
                 // disable the stream
                 mAudioStreamIdx = -1;
                 mAudioStream = NULL;
-                packet_queue_flush(&mAudioQ);
+                packet_queue_flush(mAudioQ);
                 mFormatCtx->streams[streamIndex]->discard = AVDISCARD_ALL;
             }
             return ret;
@@ -717,7 +719,7 @@ int FFmpegExtractor::streamComponentOpen(int streamIndex)
         trackInfo->mIndex  = streamIndex;
         trackInfo->mMeta   = meta;
         trackInfo->mStream = mAudioStream;
-        trackInfo->mQueue  = &mAudioQ;
+        trackInfo->mQueue  = mAudioQ;
         trackInfo->mSeek   = false;
 
         mDefersToCreateAudioTrack = false;
@@ -750,15 +752,15 @@ void FFmpegExtractor::streamComponentClose(int streamIndex)
     switch (avpar->codec_type) {
     case AVMEDIA_TYPE_VIDEO:
         ALOGV("[%s] packet_queue_abort videoq", type);
-        packet_queue_abort(&mVideoQ);
+        packet_queue_abort(mVideoQ);
         ALOGV("[%s] packet_queue_end videoq", type);
-        packet_queue_flush(&mVideoQ);
+        packet_queue_flush(mVideoQ);
         break;
     case AVMEDIA_TYPE_AUDIO:
         ALOGV("[%s] packet_queue_abort audioq", type);
-        packet_queue_abort(&mAudioQ);
+        packet_queue_abort(mAudioQ);
         ALOGV("[%s] packet_queue_end audioq", type);
-        packet_queue_flush(&mAudioQ);
+        packet_queue_flush(mAudioQ);
         break;
     case AVMEDIA_TYPE_SUBTITLE:
         break;
@@ -1019,13 +1021,13 @@ int FFmpegExtractor::initStreams()
     if (st_index[AVMEDIA_TYPE_AUDIO] >= 0) {
         audio_ret = streamComponentOpen(st_index[AVMEDIA_TYPE_AUDIO]);
         if (audio_ret >= 0)
-            packet_queue_start(&mAudioQ);
+            packet_queue_start(mAudioQ);
     }
 
     if (st_index[AVMEDIA_TYPE_VIDEO] >= 0) {
         video_ret = streamComponentOpen(st_index[AVMEDIA_TYPE_VIDEO]);
         if (video_ret >= 0)
-            packet_queue_start(&mVideoQ);
+            packet_queue_start(mVideoQ);
     }
 
     if (audio_ret < 0 && video_ret < 0) {
@@ -1162,10 +1164,10 @@ int FFmpegExtractor::feedNextPacket() {
     // Queue frame
 
     if (pkt->stream_index == mVideoStreamIdx) {
-        packet_queue_put(&mVideoQ, pkt);
+        packet_queue_put(mVideoQ, pkt);
         return mVideoStreamIdx;
     } else if (pkt->stream_index == mAudioStreamIdx) {
-        packet_queue_put(&mAudioQ, pkt);
+        packet_queue_put(mAudioQ, pkt);
         return mAudioStreamIdx;
     } else {
         av_packet_unref(pkt);
