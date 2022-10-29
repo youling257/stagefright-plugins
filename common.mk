@@ -42,7 +42,7 @@ endif
 LOCAL_CFLAGS += -D__STDC_CONSTANT_MACROS=1 -D__STDINT_LIMITS=1
 
 # Quiet some noise
-LOCAL_CFLAGS += -Wno-deprecated-declarations -Wno-unused-parameter -Wno-sign-compare -Wno-reserved-user-defined-literal
+LOCAL_CFLAGS += -Wno-unused-parameter -Wno-sign-compare -Wno-reserved-user-defined-literal
 LOCAL_CLANG_CFLAGS += -Wno-unknown-attributes
 
 LOCAL_MODULE_TAGS := optional

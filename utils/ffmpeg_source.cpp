@@ -17,6 +17,7 @@
 #define LOG_TAG "FFMPEG"
 #include <utils/Log.h>
 
+#include <inttypes.h>
 #include <stdlib.h>
 #include "ffmpeg_source.h"
 
@@ -27,6 +28,7 @@ extern "C" {
 
 #include "config.h"
 #include "libavformat/url.h"
+#include "libavutil/error.h"
 
 }
 

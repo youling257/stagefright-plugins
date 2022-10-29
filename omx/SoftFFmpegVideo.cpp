@@ -92,7 +92,7 @@ SoftFFmpegVideo::~SoftFFmpegVideo() {
     }
 }
 
-void SoftFFmpegVideo::setDefaultCtx(AVCodecContext *avctx, const AVCodec *codec) {
+void SoftFFmpegVideo::setDefaultCtx(AVCodecContext *avctx, const AVCodec *codec __unused) {
     int fast = 1;
 
     avctx->workaround_bugs   = 1;
@@ -497,8 +497,22 @@ int32_t SoftFFmpegVideo::decodeVideo() {
     }
 
     initPacket(mPacket, inHeader);
-    err = avcodec_decode_video2(mCtx, mFrame, &gotPic, mPacket);
+    err = avcodec_send_packet(mCtx, mPacket);
     av_packet_unref(mPacket);
+
+    if (err < 0 && err != AVERROR(EAGAIN)) {
+        ALOGE("ffmpeg video decoder failed to send packet. (%d)", err);
+        // don't send error to OMXCodec, skip packet!
+    }
+
+    err = avcodec_receive_frame(mCtx, mFrame);
+
+    if (err == 0) {
+        gotPic = true;
+    } else if (err == AVERROR(EAGAIN)) {
+        gotPic = false;
+        err = 0;
+    }
 
     if (err < 0) {
         ALOGE("ffmpeg video decoder failed to decode frame. (%d)", err);
@@ -585,11 +599,11 @@ int32_t SoftFFmpegVideo::drainOneOutputBuffer() {
     //process timestamps
 #ifndef LIBAV_CONFIG_H
     if (decoder_reorder_pts == -1) {
-        pts = av_frame_get_best_effort_timestamp(mFrame);
+        pts = mFrame->best_effort_timestamp;
     } else
 #endif
     if (decoder_reorder_pts) {
-        pts = mFrame->pkt_pts;
+        pts = mFrame->pts;
     } else {
         pts = mFrame->pkt_dts;
     }
